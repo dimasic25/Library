@@ -1,10 +1,14 @@
-package org.springframework.boot.library.entity;
+package org.springframework.boot.library.model;
 
 public class User {
     private int id;
     private String first_name;
     private String last_name;
     private String email;
+
+    public User() {
+
+    }
 
     public User(String first_name, String last_name, String email) {
         this.first_name = first_name;

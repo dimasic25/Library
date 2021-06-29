@@ -2,10 +2,12 @@ package org.springframework.boot.library.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.library.dao.UserDAO;
-import org.springframework.boot.library.entity.User;
+import org.springframework.boot.library.model.User;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -18,12 +20,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int saveUser(User user) {
+    public void saveUser(User user) throws SQLException {
+        userDAO.save(user);
+    }
+
+    @Override
+    public User findById(int id) {
         try {
-            userDAO.save(user);
-        } catch (SQLException throwables) {
-           return 0;
+            return userDAO.findById(id);
+        } catch (NoSuchElementException exception) {
+            return null;
         }
-        return 1;
+    }
+
+    @Override
+    public List<User> findAll() {
+        return userDAO.findAll();
     }
 }
