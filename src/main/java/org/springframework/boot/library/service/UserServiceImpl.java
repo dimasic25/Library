@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveUser(User user) throws SQLException {
+    public void saveUser(User user) {
         userDAO.save(user);
     }
 
@@ -36,5 +36,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findAll() {
         return userDAO.findAll();
+    }
+
+    @Override
+    public void updateUser(int id, User user) {
+        userDAO.update(id, user);
+    }
+
+    @Override
+    public void deleteUser(int id) {
+        userDAO.delete(id);
     }
 }

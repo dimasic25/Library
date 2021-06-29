@@ -19,11 +19,9 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public void save(User user) throws SQLException {
+    public void save(User user) {
         String sql = "INSERT INTO users(first_name, last_name, email) VALUES(?, ?, ?)";
-        if (jdbcTemplate.update(sql, user.getFirst_name(), user.getLast_name(), user.getEmail()) != 1) {
-            throw new SQLException("INSERT Error!");
-        }
+        jdbcTemplate.update(sql, user.getFirst_name(), user.getLast_name(), user.getEmail());
     }
 
     @Override
@@ -38,4 +36,17 @@ public class UserDAOImpl implements UserDAO {
         String sql = "SELECT * FROM users";
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(User.class));
     }
+
+    @Override
+    public void update(int id, User user) {
+        String sql = "UPDATE users SET first_name=?, last_name=?, email=? WHERE id=?";
+        jdbcTemplate.update(sql, user.getFirst_name(), user.getLast_name(), user.getEmail(), id);
+    }
+
+    @Override
+    public void delete(int id) {
+        String sql = "DELETE FROM users WHERE id=?";
+        jdbcTemplate.update(sql, id);
+    }
+
 }

@@ -23,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping()
-    public ResponseEntity<List> findAll() {
+    public ResponseEntity<List<User>> findAll() {
         List<User> users = userService.findAll();
 
         return new ResponseEntity<>(users, HttpStatus.OK);
@@ -40,8 +40,22 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<User> createUser(@RequestBody User user) throws SQLException {
+    public ResponseEntity<User> createUser(@RequestBody User user) {
         userService.saveUser(user);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable int id, @RequestBody User user) {
+        userService.updateUser(id, user);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<User> deleteUser(@PathVariable int id) {
+        userService.deleteUser(id);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
