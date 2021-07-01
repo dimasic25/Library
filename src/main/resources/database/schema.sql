@@ -14,11 +14,33 @@ CREATE TABLE notifications
     FOREIGN KEY (book_id) REFERENCES books (id)
 );
 
+CREATE TABLE authors
+(
+    id   SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE genres
+(
+    id   SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
+
 CREATE TABLE books
 (
-    id     SERIAL PRIMARY KEY,
-    author VARCHAR(100) NOT NULL,
-    genre  VARCHAR(100) NOT NULL
+    id        SERIAL PRIMARY KEY,
+    name      VARCHAR(100) NOT NULL,
+    author_id INTEGER      NOT NULL,
+    FOREIGN KEY (author_id) REFERENCES authors (id)
+);
+
+CREATE TABLE book_genre
+(
+    id       SERIAL PRIMARY KEY,
+    book_id  INTEGER NOT NULL,
+    genre_id INTEGER NOT NULL,
+    FOREIGN KEY (book_id) REFERENCES books (id),
+    FOREIGN KEY (genre_id) REFERENCES genres (id)
 );
 
 CREATE TABLE book_user

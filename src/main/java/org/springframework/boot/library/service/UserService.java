@@ -9,7 +9,7 @@ public interface UserService {
 
     User findById(int id);
 
-    List<User> findAll();
+    List<User> getAllUsers();
 
     void updateUser(int id, User user);
 
