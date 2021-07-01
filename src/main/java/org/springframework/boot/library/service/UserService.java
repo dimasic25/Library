@@ -2,7 +2,6 @@ package org.springframework.boot.library.service;
 
 import org.springframework.boot.library.model.User;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public interface UserService {

@@ -5,7 +5,6 @@ import org.springframework.boot.library.dao.UserDAO;
 import org.springframework.boot.library.model.User;
 import org.springframework.stereotype.Service;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
