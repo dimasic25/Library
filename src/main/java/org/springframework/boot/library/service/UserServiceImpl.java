@@ -24,7 +24,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(int id) {
+    public User getUser(int id) {
         try {
             return userDAO.findById(id);
         } catch (NoSuchElementException exception) {

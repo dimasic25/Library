@@ -1,17 +1,29 @@
 package org.springframework.boot.library.model;
 
+import java.util.List;
+
 public class Book {
     private int id;
-    private String author;
-    private String genre;
+    private String name;
+    private Author author;
+    private List<Genre> genres;
 
     public Book() {
 
     }
 
-    public Book(String author, String genre) {
+    public Book(String name, Author author, List<Genre> genres) {
+        this.name = name;
         this.author = author;
-        this.genre = genre;
+        this.genres = genres;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getId() {
@@ -22,19 +34,19 @@ public class Book {
         this.id = id;
     }
 
-    public String getAuthor() {
+    public Author getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(Author author) {
         this.author = author;
     }
 
-    public String getGenre() {
-        return genre;
+    public List<Genre> getGenres() {
+        return genres;
     }
 
-    public void setGenre(String genre) {
-        this.genre = genre;
+    public void setGenres(List<Genre> genres) {
+        this.genres = genres;
     }
 }
