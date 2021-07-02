@@ -57,9 +57,7 @@ CREATE TABLE dates
     id          SERIAL PRIMARY KEY,
     data_taking timestamp NOT NULL,
     date_return timestamp NOT NULL,
-    book_id     INTEGER   NOT NULL,
-    user_id     INTEGER   NOT NULL,
-    FOREIGN KEY (book_id) REFERENCES books (id),
-    FOREIGN KEY (user_id) REFERENCES users (id)
+    book_user_id INTEGER   NOT NULL,
+    FOREIGN KEY (book_user_id) REFERENCES book_user (id),
 );
 

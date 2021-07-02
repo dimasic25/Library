@@ -9,4 +9,6 @@ public interface BookDao {
     List<Book> findAll();
 
     Book findById(int id);
+
+    void takeBook(int user_id, int book_id);
 }

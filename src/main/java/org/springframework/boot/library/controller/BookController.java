@@ -37,4 +37,10 @@ public class BookController {
 
         return new ResponseEntity<>(book, HttpStatus.OK);
     }
+
+    @GetMapping("users/{user_id}/books/{book_id}")
+    public ResponseEntity<Integer> takeBook(@PathVariable int user_id, @PathVariable int book_id) {
+        bookService.takeBook(user_id, book_id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

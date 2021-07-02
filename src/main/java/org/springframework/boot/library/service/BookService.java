@@ -8,4 +8,6 @@ public interface BookService {
     List<Book> getAllBooks();
 
     Book getBook(int id);
+
+    void takeBook(int user_id, int book_id);
 }

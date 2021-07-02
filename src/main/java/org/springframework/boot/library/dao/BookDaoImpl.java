@@ -49,6 +49,14 @@ public class BookDaoImpl implements BookDao {
     }
 
     @Override
+    public void takeBook(int user_id, int book_id) {
+
+      String sql = "INSERT INTO book_user(book_id, user_id) VALUES(?, ?)";
+      jdbcTemplate.update(sql, book_id, user_id);
+
+    }
+
+    @Override
     public List<Book> findAll() {
         String sql = "SELECT id FROM books";
         List<Integer> all_id = jdbcTemplate.queryForList(sql, Integer.class);
@@ -61,5 +69,7 @@ public class BookDaoImpl implements BookDao {
 
         return books;
     }
+
+
 }
 
