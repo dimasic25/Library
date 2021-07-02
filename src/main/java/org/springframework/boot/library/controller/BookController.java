@@ -7,6 +7,7 @@ import org.springframework.boot.library.service.BookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -41,6 +42,12 @@ public class BookController {
     @GetMapping("users/{user_id}/books/{book_id}")
     public ResponseEntity<Integer> takeBook(@PathVariable int user_id, @PathVariable int book_id) {
         bookService.takeBook(user_id, book_id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("users/{user_id}/books/{book_id}")
+    public ResponseEntity<Integer> returnBook(@PathVariable int user_id, @PathVariable int book_id) {
+        bookService.returnBook(user_id, book_id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -35,4 +35,9 @@ public class BookServiceImpl implements BookService {
     public void takeBook(int user_id, int book_id) {
         bookDao.takeBook(user_id, book_id);
     }
+
+    @Override
+    public void returnBook(int user_id, int book_id) {
+        bookDao.returnBook(user_id, book_id);
+    }
 }

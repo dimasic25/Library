@@ -52,15 +52,27 @@ public class BookDaoImpl implements BookDao {
     @Override
     public void takeBook(int user_id, int book_id) {
 
-        Date data = new Date();
-        Timestamp data_taking = new Timestamp(data.getTime());
+        Date date = new Date();
+        Timestamp date_taking = new Timestamp(date.getTime());
         String sql = "INSERT INTO dates(data_taking, book_id, user_id) VALUES(?, ?, ?)";
 
-        jdbcTemplate.update(sql, data_taking, book_id, user_id);
+        jdbcTemplate.update(sql, date_taking, book_id, user_id);
 
         String sql2 = "INSERT INTO book_user(book_id, user_id) VALUES(?, ?)";
         jdbcTemplate.update(sql2, book_id, user_id);
 
+    }
+
+    @Override
+    public void returnBook(int user_id, int book_id) {
+        Date date = new Date();
+        Timestamp date_return = new Timestamp(date.getTime());
+
+        String sql = "UPDATE dates SET date_return=? WHERE book_id=? AND user_id=?";
+        jdbcTemplate.update(sql, date_return, book_id, user_id);
+
+        String sql2 = "DELETE FROM book_user WHERE book_id=? AND user_id=?";
+        jdbcTemplate.update(sql2, book_id, user_id);
     }
 
     @Override

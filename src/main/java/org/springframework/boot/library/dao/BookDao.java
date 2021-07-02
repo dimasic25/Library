@@ -11,4 +11,6 @@ public interface BookDao {
     Book findById(int id);
 
     void takeBook(int user_id, int book_id);
+
+    void returnBook(int user_id, int book_id);
 }
