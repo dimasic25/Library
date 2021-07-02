@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 @Repository
@@ -51,8 +52,14 @@ public class BookDaoImpl implements BookDao {
     @Override
     public void takeBook(int user_id, int book_id) {
 
-      String sql = "INSERT INTO book_user(book_id, user_id) VALUES(?, ?)";
-      jdbcTemplate.update(sql, book_id, user_id);
+        Date data = new Date();
+        Timestamp data_taking = new Timestamp(data.getTime());
+        String sql = "INSERT INTO dates(data_taking, book_id, user_id) VALUES(?, ?, ?)";
+
+        jdbcTemplate.update(sql, data_taking, book_id, user_id);
+
+        String sql2 = "INSERT INTO book_user(book_id, user_id) VALUES(?, ?)";
+        jdbcTemplate.update(sql2, book_id, user_id);
 
     }
 
