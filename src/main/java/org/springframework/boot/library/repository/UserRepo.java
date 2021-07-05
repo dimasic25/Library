@@ -1,10 +1,10 @@
-package org.springframework.boot.library.dao;
+package org.springframework.boot.library.repository;
 
 import org.springframework.boot.library.model.User;
 
 import java.util.List;
 
-public interface UserDAO {
+public interface UserRepo {
     void save(User user);
 
     User findById(int id);

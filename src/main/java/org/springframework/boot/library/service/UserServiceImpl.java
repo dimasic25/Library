@@ -1,7 +1,7 @@
 package org.springframework.boot.library.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.library.dao.UserDAO;
+import org.springframework.boot.library.repository.UserRepo;
 import org.springframework.boot.library.model.User;
 import org.springframework.stereotype.Service;
 
@@ -11,22 +11,22 @@ import java.util.NoSuchElementException;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserDAO userDAO;
+    private final UserRepo userRepo;
 
     @Autowired
-    public UserServiceImpl(UserDAO userDAO) {
-        this.userDAO = userDAO;
+    public UserServiceImpl(UserRepo userRepo) {
+        this.userRepo = userRepo;
     }
 
     @Override
     public void saveUser(User user) {
-        userDAO.save(user);
+        userRepo.save(user);
     }
 
     @Override
     public User getUser(int id) {
         try {
-            return userDAO.findById(id);
+            return userRepo.findById(id);
         } catch (NoSuchElementException exception) {
             return null;
         }
@@ -34,16 +34,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllUsers() {
-        return userDAO.findAll();
+        return userRepo.findAll();
     }
 
     @Override
     public void updateUser(int id, User user) {
-        userDAO.update(id, user);
+        userRepo.update(id, user);
     }
 
     @Override
     public void deleteUser(int id) {
-        userDAO.delete(id);
+        userRepo.delete(id);
     }
 }

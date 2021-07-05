@@ -1,4 +1,4 @@
-package org.springframework.boot.library.dao;
+package org.springframework.boot.library.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.library.model.User;
@@ -9,11 +9,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public class UserDAOImpl implements UserDAO {
+public class UserRepoImpl implements UserRepo {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public UserDAOImpl(JdbcTemplate jdbcTemplate) {
+    public UserRepoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
