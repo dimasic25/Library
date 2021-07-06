@@ -3,6 +3,7 @@ package org.springframework.boot.library.repository;
 
 import org.springframework.boot.library.model.Book;
 import org.springframework.boot.library.model.DateBook;
+import org.springframework.boot.library.model.User;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -18,4 +19,10 @@ public interface BookRepo {
     void returnBook(int user_id, int book_id);
 
     List<DateBook> findAllBooksForPeriod(LocalDate begin, LocalDate end);
+
+    void save(Book book);
+
+    void update(int id, Book book);
+
+    void delete(int id);
 }

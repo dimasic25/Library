@@ -6,7 +6,7 @@ import org.springframework.boot.library.model.Book;
 import org.springframework.boot.library.model.DateBook;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -49,5 +49,20 @@ public class BookServiceImpl implements BookService {
         LocalDate from = LocalDate.parse(begin);
         LocalDate to = LocalDate.parse(end);
         return bookRepo.findAllBooksForPeriod(from, to);
+    }
+
+    @Override
+    public void saveBook(Book book) {
+        bookRepo.save(book);
+    }
+
+    @Override
+    public void updateBook(int id, Book book) {
+
+    }
+
+    @Override
+    public void deleteBook(int id) {
+
     }
 }

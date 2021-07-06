@@ -108,6 +108,36 @@ public class BookRepoImpl implements BookRepo {
     }
 
     @Override
+    public void save(Book book) {
+        String sql = "INSERT INTO books(name, author_id) VALUES(?, ?)";
+        jdbcTemplate.update(sql, book.getName(), book.getAuthor().getId());
+
+        String sql_book = "SELECT * FROM books WHERE name = ? AND author_id = ?";
+        Book newBook = jdbcTemplate.query(sql_book, new BeanPropertyRowMapper<>(Book.class), book.getName(), book.getAuthor().getId())
+                .stream().findAny().orElseThrow();
+
+        String sql_genre = "INSERT INTO book_genre(book_id, genre_id) VALUES(?, ?)";
+
+        List<Genre> genres = book.getGenres();
+
+
+        for (Genre genre:
+             genres) {
+            jdbcTemplate.update(sql_genre, newBook.getId(), genre.getId());
+        }
+
+    }
+
+    @Override
+    public void update(int id, Book book) {
+    }
+
+    @Override
+    public void delete(int id) {
+
+    }
+
+    @Override
     public List<Book> findAll() {
         String sql = "SELECT id FROM books";
         List<Integer> all_id = jdbcTemplate.queryForList(sql, Integer.class);
