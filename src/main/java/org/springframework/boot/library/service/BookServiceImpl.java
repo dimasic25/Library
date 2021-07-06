@@ -58,11 +58,11 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void updateBook(int id, Book book) {
-
+        bookRepo.update(id, book);
     }
 
     @Override
     public void deleteBook(int id) {
-
+    bookRepo.delete(id);
     }
 }

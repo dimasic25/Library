@@ -121,8 +121,8 @@ public class BookRepoImpl implements BookRepo {
         List<Genre> genres = book.getGenres();
 
 
-        for (Genre genre:
-             genres) {
+        for (Genre genre :
+                genres) {
             jdbcTemplate.update(sql_genre, newBook.getId(), genre.getId());
         }
 
@@ -130,11 +130,30 @@ public class BookRepoImpl implements BookRepo {
 
     @Override
     public void update(int id, Book book) {
+        String sql = "UPDATE books SET name =?, author_id=? WHERE id=?";
+        jdbcTemplate.update(sql, book.getName(), book.getAuthor().getId(), id);
+
+        String delete_sql = "DELETE FROM book_genre WHERE book_id=?";
+
+        jdbcTemplate.update(delete_sql, id);
+
+        String sql_genre = "INSERT INTO book_genre(book_id, genre_id) VALUES(?, ?)";
+
+        List<Genre> genres = book.getGenres();
+
+        for (Genre genre :
+                genres) {
+            jdbcTemplate.update(sql_genre, id, genre.getId());
+        }
     }
 
     @Override
     public void delete(int id) {
+        String sql = "DELETE FROM book_genre WHERE book_id=?";
+        jdbcTemplate.update(sql, id);
 
+        String sql1 = "DELETE FROM books WHERE id=?";
+        jdbcTemplate.update(sql1, id);
     }
 
     @Override

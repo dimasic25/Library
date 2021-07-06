@@ -1,7 +1,6 @@
 package org.springframework.boot.library.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.library.model.Author;
 import org.springframework.boot.library.model.Book;
 import org.springframework.boot.library.model.DateBook;
 import org.springframework.boot.library.model.User;
@@ -61,6 +60,20 @@ public class BookController {
     @PostMapping("/books")
     public ResponseEntity<Book> createBook(@RequestBody Book book) {
         bookService.saveBook(book);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/books/{id}")
+    public ResponseEntity<User> updateBook(@PathVariable int id, @RequestBody Book book) {
+        bookService.updateBook(id, book);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/books/{id}")
+    public ResponseEntity<Book> deleteBook(@PathVariable int id) {
+        bookService.deleteBook(id);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
