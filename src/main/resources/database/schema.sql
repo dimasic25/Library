@@ -9,9 +9,7 @@ CREATE TABLE users
 CREATE TABLE notifications
 (
     id      SERIAL PRIMARY KEY,
-    book_id INTEGER      NOT NULL,
     message VARCHAR(255) NOT NULL,
-    FOREIGN KEY (book_id) REFERENCES books (id)
 );
 
 CREATE TABLE authors

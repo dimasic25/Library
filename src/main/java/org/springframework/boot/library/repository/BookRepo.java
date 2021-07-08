@@ -3,9 +3,7 @@ package org.springframework.boot.library.repository;
 
 import org.springframework.boot.library.model.Book;
 import org.springframework.boot.library.model.DateBook;
-import org.springframework.boot.library.model.User;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -15,6 +13,8 @@ public interface BookRepo {
     Book findById(int id);
 
     void takeBook(int user_id, int book_id);
+
+    void takeBookEvent(String message, LocalDate date, String user_name, String book_name);
 
     void returnBook(int user_id, int book_id);
 
