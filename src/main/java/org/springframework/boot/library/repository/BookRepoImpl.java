@@ -54,30 +54,35 @@ public class BookRepoImpl implements BookRepo {
 
     @Override
     public void takeBook(int user_id, int book_id) {
+        String sql_logic = "SELECT id FROM dates WHERE book_id=? AND user_id=? AND date_return IS NULL";
+        List<Integer> flag = jdbcTemplate.queryForList(sql_logic, Integer.class, book_id, user_id);
 
-        Date date = new Date();
-        Timestamp date_taking = new Timestamp(date.getTime());
-        String sql = "INSERT INTO dates(date_taking, book_id, user_id) VALUES(?, ?, ?)";
+        if (flag.size() == 0) {
 
-        jdbcTemplate.update(sql, date_taking, book_id, user_id);
+            Date date = new Date();
+            Timestamp date_taking = new Timestamp(date.getTime());
+            String sql = "INSERT INTO dates(date_taking, book_id, user_id) VALUES(?, ?, ?)";
 
-        String sql2 = "INSERT INTO book_user(book_id, user_id) VALUES(?, ?)";
-        jdbcTemplate.update(sql2, book_id, user_id);
+            jdbcTemplate.update(sql, date_taking, book_id, user_id);
 
-        String sql3 = "SELECT first_name FROM users WHERE id = ?";
-        List<String> list = jdbcTemplate.queryForList(sql3, String.class, user_id);
-        String first_name = list.get(0);
+            String sql2 = "INSERT INTO book_user(book_id, user_id) VALUES(?, ?)";
+            jdbcTemplate.update(sql2, book_id, user_id);
+
+            String sql3 = "SELECT first_name FROM users WHERE id = ?";
+            List<String> list = jdbcTemplate.queryForList(sql3, String.class, user_id);
+            String first_name = list.get(0);
 
 
-        String sql4 = "SELECT last_name FROM users WHERE id = ?";
-        list = jdbcTemplate.queryForList(sql4, String.class, user_id);
-        String last_name = list.get(0);
+            String sql4 = "SELECT last_name FROM users WHERE id = ?";
+            list = jdbcTemplate.queryForList(sql4, String.class, user_id);
+            String last_name = list.get(0);
 
-        String user_name = first_name + " " + last_name;
-        LocalDate localDate = LocalDate.ofInstant(date.toInstant(), ZoneId.systemDefault());
-        String book_name = findById(book_id).getName();
+            String user_name = first_name + " " + last_name;
+            LocalDate localDate = LocalDate.ofInstant(date.toInstant(), ZoneId.systemDefault());
+            String book_name = findById(book_id).getName();
 
-        eventPublisher.publishTakeBookEvent("", localDate, user_name, book_name);
+            eventPublisher.publishTakeBookEvent("", localDate, user_name, book_name);
+        }
     }
 
     @Override
@@ -91,29 +96,35 @@ public class BookRepoImpl implements BookRepo {
 
     @Override
     public void returnBook(int user_id, int book_id) {
-        Date date = new Date();
-        Timestamp date_return = new Timestamp(date.getTime());
+        String sql_logic = "SELECT id FROM dates WHERE book_id=? AND user_id=? AND date_return IS NULL";
+        List<Integer> flag = jdbcTemplate.queryForList(sql_logic, Integer.class, book_id, user_id);
 
-        String sql = "UPDATE dates SET date_return=? WHERE book_id=? AND user_id=?";
-        jdbcTemplate.update(sql, date_return, book_id, user_id);
+        if (flag.size() != 0) {
 
-        String sql2 = "DELETE FROM book_user WHERE book_id=? AND user_id=?";
-        jdbcTemplate.update(sql2, book_id, user_id);
+            Date date = new Date();
+            Timestamp date_return = new Timestamp(date.getTime());
 
-        String sql3 = "SELECT first_name FROM users WHERE id = ?";
-        List<String> list = jdbcTemplate.queryForList(sql3, String.class, user_id);
-        String first_name = list.get(0);
+            String sql = "UPDATE dates SET date_return=? WHERE book_id=? AND user_id=? AND date_return IS NULL";
+            jdbcTemplate.update(sql, date_return, book_id, user_id);
+
+            String sql2 = "DELETE FROM book_user WHERE book_id=? AND user_id=?";
+            jdbcTemplate.update(sql2, book_id, user_id);
+
+            String sql3 = "SELECT first_name FROM users WHERE id = ?";
+            List<String> list = jdbcTemplate.queryForList(sql3, String.class, user_id);
+            String first_name = list.get(0);
 
 
-        String sql4 = "SELECT last_name FROM users WHERE id = ?";
-        list = jdbcTemplate.queryForList(sql4, String.class, user_id);
-        String last_name = list.get(0);
+            String sql4 = "SELECT last_name FROM users WHERE id = ?";
+            list = jdbcTemplate.queryForList(sql4, String.class, user_id);
+            String last_name = list.get(0);
 
-        String user_name = first_name + " " + last_name;
-        LocalDate localDate = LocalDate.ofInstant(date.toInstant(), ZoneId.systemDefault());
-        String book_name = findById(book_id).getName();
+            String user_name = first_name + " " + last_name;
+            LocalDate localDate = LocalDate.ofInstant(date.toInstant(), ZoneId.systemDefault());
+            String book_name = findById(book_id).getName();
 
-        eventPublisher.publishReturnBookEvent("", localDate, user_name, book_name);
+            eventPublisher.publishReturnBookEvent("", localDate, user_name, book_name);
+        }
     }
 
     @Override

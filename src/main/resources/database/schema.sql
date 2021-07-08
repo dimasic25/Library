@@ -9,7 +9,7 @@ CREATE TABLE users
 CREATE TABLE notifications
 (
     id      SERIAL PRIMARY KEY,
-    message VARCHAR(255) NOT NULL,
+    message VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE authors
@@ -46,10 +46,8 @@ CREATE TABLE book_user
     id      SERIAL PRIMARY KEY,
     book_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
-    dates_id SERIAL NOT NULL,
     FOREIGN KEY (book_id) REFERENCES books (id),
-    FOREIGN KEY (user_id) REFERENCES users (id),
-    FOREIGN KEY (dates_id) REFERENCES dates (id)
+    FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
 CREATE TABLE dates
