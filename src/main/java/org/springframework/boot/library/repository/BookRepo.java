@@ -18,6 +18,8 @@ public interface BookRepo {
 
     void returnBook(int user_id, int book_id);
 
+    void returnBookEvent(String message, LocalDate date, String user_name, String book_name);
+
     List<DateBook> findAllBooksForPeriod(LocalDate begin, LocalDate end);
 
     void save(Book book);

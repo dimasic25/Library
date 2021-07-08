@@ -2,7 +2,7 @@ package org.springframework.boot.library.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.library.model.*;
-import org.springframework.boot.library.publishers.TakeBookEventPublisher;
+import org.springframework.boot.library.publishers.BookEventPublisher;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -15,10 +15,10 @@ import java.util.*;
 @Repository
 public class BookRepoImpl implements BookRepo {
     private final JdbcTemplate jdbcTemplate;
-    private final TakeBookEventPublisher eventPublisher;
+    private final BookEventPublisher eventPublisher;
 
     @Autowired
-    public BookRepoImpl(JdbcTemplate jdbcTemplate, TakeBookEventPublisher eventPublisher) {
+    public BookRepoImpl(JdbcTemplate jdbcTemplate, BookEventPublisher eventPublisher) {
         this.jdbcTemplate = jdbcTemplate;
         this.eventPublisher = eventPublisher;
     }
@@ -99,6 +99,29 @@ public class BookRepoImpl implements BookRepo {
 
         String sql2 = "DELETE FROM book_user WHERE book_id=? AND user_id=?";
         jdbcTemplate.update(sql2, book_id, user_id);
+
+        String sql3 = "SELECT first_name FROM users WHERE id = ?";
+        List<String> list = jdbcTemplate.queryForList(sql3, String.class, user_id);
+        String first_name = list.get(0);
+
+
+        String sql4 = "SELECT last_name FROM users WHERE id = ?";
+        list = jdbcTemplate.queryForList(sql4, String.class, user_id);
+        String last_name = list.get(0);
+
+        String user_name = first_name + " " + last_name;
+        LocalDate localDate = LocalDate.ofInstant(date.toInstant(), ZoneId.systemDefault());
+        String book_name = findById(book_id).getName();
+
+        eventPublisher.publishReturnBookEvent("", localDate, user_name, book_name);
+    }
+
+    @Override
+    public void returnBookEvent(String message, LocalDate date, String user_name, String book_name) {
+        message = user_name + " вернул книгу " + book_name + " " + date;
+
+        String sql = "INSERT INTO notifications(message) VALUES(?)";
+        jdbcTemplate.update(sql, message);
     }
 
     @Override
