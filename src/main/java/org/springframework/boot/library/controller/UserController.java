@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
+@CrossOrigin
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
@@ -23,6 +24,7 @@ public class UserController {
     @GetMapping()
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();
+
 
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
