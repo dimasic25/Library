@@ -142,6 +142,16 @@ public class BookRepoImpl implements BookRepo {
         String sql = "SELECT id, date_taking, date_return FROM dates WHERE date_taking>? AND date_return<?";
         List<DateBook> date_books = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(DateBook.class), date_begin, date_end);
 
+        String sql_id = "SELECT id FROM dates WHERE date_taking>? AND date_return<?";
+        List<Integer> dates_id = jdbcTemplate.queryForList(sql_id, Integer.class, date_begin, date_end);
+
+        String sql_userId = "SELECT user_id FROM dates WHERE id = ?";
+        List<Integer> users_id = new ArrayList<>();
+        for (int date_id:
+             dates_id) {
+            users_id.add((jdbcTemplate.queryForList(sql_userId, Integer.class, date_id)).get(0));
+        }
+
         String sql2 = "SELECT book_id FROM dates WHERE date_taking>? AND date_return<?";
         List<Integer> books_id = jdbcTemplate.queryForList(sql2, Integer.class, date_begin, date_end);
 
@@ -154,15 +164,20 @@ public class BookRepoImpl implements BookRepo {
             index++;
         }
 
-        String sql3 = "SELECT users.id, users.first_name, users.last_name, users.email FROM users" +
-                " INNER JOIN dates ON dates.user_id = users.id AND dates.date_taking>? AND dates.date_return<?";
-        List<User> users = jdbcTemplate.query(sql3, new BeanPropertyRowMapper<>(User.class), date_begin, date_end);
+        String sql3 = "SELECT * FROM users WHERE" +
+                " id = ?";
+        List<User> users = new ArrayList<>();
+        for (int user_id:
+             users_id) {
+            users.addAll(jdbcTemplate.query(sql3, new BeanPropertyRowMapper<>(User.class), user_id));
+        }
 
         index = 0;
         for (DateBook el :
                 date_books) {
             User user = users.get(index);
             el.setUser(user);
+            index++;
         }
 
         return date_books;
