@@ -78,4 +78,11 @@ public class BookController {
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping("/users/{id}/booksUser")
+    public ResponseEntity<List<Book>> getBooksUser(@PathVariable int id) {
+        List<Book> books = bookService.getBooksUser(id);
+
+        return new ResponseEntity<>(books, HttpStatus.OK);
+    }
 }

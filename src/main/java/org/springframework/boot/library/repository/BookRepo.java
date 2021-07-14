@@ -27,4 +27,6 @@ public interface BookRepo {
     void update(int id, Book book);
 
     void delete(int id);
+
+    List<Book> findBooksUser(int id);
 }

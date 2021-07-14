@@ -218,6 +218,20 @@ public class BookRepoImpl implements BookRepo {
     }
 
     @Override
+    public List<Book> findBooksUser(int user_id) {
+        String sql = "SELECT book_id FROM book_user WHERE user_id=?";
+        List<Integer> books_id = jdbcTemplate.queryForList(sql, Integer.class, user_id);
+
+        List<Book> books = new ArrayList<>();
+        for (int id :
+                books_id) {
+            books.add(findById(id));
+        }
+
+        return books;
+    }
+
+    @Override
     public List<Book> findAll() {
         String sql = "SELECT id FROM books";
         List<Integer> all_id = jdbcTemplate.queryForList(sql, Integer.class);
@@ -230,6 +244,7 @@ public class BookRepoImpl implements BookRepo {
 
         return books;
     }
+
 
 
 }

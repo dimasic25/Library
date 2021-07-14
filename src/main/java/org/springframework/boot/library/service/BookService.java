@@ -22,4 +22,6 @@ public interface BookService {
     void updateBook(int id, Book book);
 
     void deleteBook(int id);
+
+    List<Book> getBooksUser(int user_id);
 }

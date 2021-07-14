@@ -65,4 +65,9 @@ public class BookServiceImpl implements BookService {
     public void deleteBook(int id) {
     bookRepo.delete(id);
     }
+
+    @Override
+    public List<Book> getBooksUser(int user_id) {
+        return bookRepo.findBooksUser(user_id);
+    }
 }
