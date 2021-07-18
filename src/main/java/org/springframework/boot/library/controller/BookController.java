@@ -29,9 +29,9 @@ public class BookController {
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
-    @GetMapping("/books/{id}")
-    public ResponseEntity<Book> getBook(@PathVariable int id) {
-        Book book = bookService.getBook(id);
+    @GetMapping("/books/{book_id}")
+    public ResponseEntity<Book> getBook(@PathVariable int book_id) {
+        Book book = bookService.getBook(book_id);
         if (book == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -51,7 +51,7 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("booksPeriod")
+    @GetMapping("/books-period")
     public ResponseEntity<List<DateBook>> returnBooksForPeriod(@RequestParam(value = "begin", required = false) String begin,
                                                                @RequestParam(value = "end", required = false) String end) {
         List<DateBook> books = bookService.returnBooksForPeriod(begin, end);
@@ -65,9 +65,9 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/books/{id}")
-    public ResponseEntity<User> updateBook(@PathVariable int id, @RequestBody Book book) {
-        bookService.updateBook(id, book);
+    @PutMapping("/books/{book_id}")
+    public ResponseEntity<User> updateBook(@PathVariable int book_id, @RequestBody Book book) {
+        bookService.updateBook(book_id, book);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -79,9 +79,9 @@ public class BookController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/users/{id}/booksUser")
-    public ResponseEntity<List<Book>> getBooksUser(@PathVariable int id) {
-        List<Book> books = bookService.getBooksUser(id);
+    @GetMapping("/users/{user_id}/books")
+    public ResponseEntity<List<Book>> getBooksUser(@PathVariable int user_id) {
+        List<Book> books = bookService.getBooksUser(user_id);
 
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
