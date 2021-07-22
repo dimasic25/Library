@@ -1,1 +1,1 @@
-DROP TABLE dates
+DROP TABLE book_user

@@ -44,7 +44,7 @@ public class UserRepoImpl implements UserRepo {
 
     @Override
     public void delete(int id) {
-        String sql_dates = "DELETE FROM dates WHERE user_id=?";
+        String sql_dates = "DELETE FROM book_user WHERE user_id=?";
         jdbcTemplate.update(sql_dates, id);
 
         String sql = "DELETE FROM users WHERE id=?";

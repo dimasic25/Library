@@ -42,14 +42,6 @@ CREATE TABLE book_genre
 
 CREATE TABLE book_user
 (
-    book_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
-    FOREIGN KEY (book_id) REFERENCES books (id),
-    FOREIGN KEY (user_id) REFERENCES users (id)
-);
-
-CREATE TABLE dates
-(
     date_taking DATE NOT NULL,
     date_return DATE NULL,
     book_id     INTEGER   NOT NULL,

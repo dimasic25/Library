@@ -14,11 +14,7 @@ public interface BookRepo {
 
     void takeBook(int user_id, int book_id);
 
-    void takeBookEvent(String message, LocalDate date, String user_name, String book_name);
-
     void returnBook(int user_id, int book_id);
-
-    void returnBookEvent(String message, LocalDate date, String user_name, String book_name);
 
     List<DateBook> findAllBooksForPeriod(LocalDate begin, LocalDate end);
 

@@ -6,12 +6,9 @@ import org.springframework.boot.library.model.*;
 import org.springframework.boot.library.publishers.BookEventPublisher;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -29,35 +26,39 @@ public class BookRepoImpl implements BookRepo {
 
     @Override
     public Book findById(int id) {
-        String sql = "SELECT books.id as book_id, books.name as book_name,\n" +
-                "       authors.id as author_id, authors.name as author_name,\n" +
-                "       book_genre.genre_id, genres.name as genre_name\n" +
-                "FROM books INNER JOIN authors ON authors.id = books.author_id\n" +
-                "           INNER JOIN book_genre ON book_genre.book_id = books.id\n" +
-                "           INNER JOIN genres ON book_genre.genre_id = genres.id\n" +
-                "WHERE books.id = ?";
+        String sql = "SELECT books.id as book_id,\n" +
+                "       books.name as book_name,\n" +
+                "       authors.id as author_id,\n" +
+                "       authors.name as author_name,\n" +
+                "       (SELECT array_agg(genres.name) as genres_name\n" +
+                "        FROM genres\n" +
+                "                 INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = ?),\n" +
+                "       (SELECT array_agg(genres.id) as genres_id\n" +
+                "        FROM genres\n" +
+                "                 INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = ?)\n" +
+                "FROM books\n" +
+                "         INNER JOIN authors\n" +
+                "                    ON authors.id = books.author_id\n" +
+                "WHERE books.id = ?;";
 
-        return jdbcTemplate.queryForObject(sql, new BookMapper(), id);
+        return jdbcTemplate.queryForObject(sql, new BookMapper(), id, id, id);
     }
 
     @Override
     public void takeBook(int user_id, int book_id) {
-        String sql_logic = "SELECT id FROM dates WHERE book_id=? AND user_id=? AND date_return IS NULL";
+        String sql_logic = "SELECT id FROM book_user WHERE book_id=? AND user_id=? AND date_return IS NULL";
         List<Integer> flag = jdbcTemplate.queryForList(sql_logic, Integer.class, book_id, user_id);
 
         if (flag.size() == 0) {
 
             LocalDate date = LocalDate.now();
             Date date_taking = Date.valueOf(date);
-            String sql = "INSERT INTO dates(date_taking, book_id, user_id) VALUES(?, ?, ?)";
+            String sql = "INSERT INTO book_user(date_taking, book_id, user_id) VALUES(?, ?, ?)";
 
             jdbcTemplate.update(sql, date_taking, book_id, user_id);
 
-            String sql2 = "INSERT INTO book_user(book_id, user_id) VALUES(?, ?)";
-            jdbcTemplate.update(sql2, book_id, user_id);
-
-            String sql3 = "SELECT concat_ws(' ', first_name, last_name) FROM users WHERE id = ?";
-            String user_name = jdbcTemplate.queryForObject(sql3, String.class, user_id);
+            String sql2 = "SELECT concat_ws(' ', first_name, last_name) FROM users WHERE id = ?";
+            String user_name = jdbcTemplate.queryForObject(sql2, String.class, user_id);
 
             String book_name = findById(book_id).getName();
 
@@ -66,66 +67,39 @@ public class BookRepoImpl implements BookRepo {
     }
 
     @Override
-    public void takeBookEvent(String message, LocalDate date, String user_name, String book_name) {
-
-        message = user_name + " взял книгу " + book_name + " " + date;
-
-        String sql = "INSERT INTO notifications(message) VALUES(?)";
-        jdbcTemplate.update(sql, message);
-    }
-
-    @Override
     public void returnBook(int user_id, int book_id) {
-            LocalDate date = LocalDate.now();
-            Date date_return = Date.valueOf(date);
+        LocalDate date = LocalDate.now();
+        Date date_return = Date.valueOf(date);
 
-            String sql = "UPDATE dates SET date_return=? WHERE book_id=? AND user_id=? AND date_return IS NULL";
-            jdbcTemplate.update(sql, date_return, book_id, user_id);
+        String sql = "UPDATE book_user SET date_return=? WHERE book_id=? AND user_id=? AND date_return IS NULL";
+        jdbcTemplate.update(sql, date_return, book_id, user_id);
 
-            String sql2 = "DELETE FROM book_user WHERE book_id=? AND user_id=?";
-            jdbcTemplate.update(sql2, book_id, user_id);
+        String sql2 = "SELECT concat_ws(' ', first_name, last_name) FROM users WHERE id = ?";
+        String user_name = jdbcTemplate.queryForObject(sql2, String.class, user_id);
 
-            String sql3 = "SELECT first_name FROM users WHERE id = ?";
-            List<String> list = jdbcTemplate.queryForList(sql3, String.class, user_id);
-            String first_name = list.get(0);
+        String book_name = findById(book_id).getName();
 
-
-            String sql4 = "SELECT last_name FROM users WHERE id = ?";
-            list = jdbcTemplate.queryForList(sql4, String.class, user_id);
-            String last_name = list.get(0);
-
-            String user_name = first_name + " " + last_name;
-            String book_name = findById(book_id).getName();
-
-            eventPublisher.publishReturnBookEvent("", date, user_name, book_name);
-    }
-
-    @Override
-    public void returnBookEvent(String message, LocalDate date, String user_name, String book_name) {
-        message = user_name + " вернул книгу " + book_name + " " + date;
-
-        String sql = "INSERT INTO notifications(message) VALUES(?)";
-        jdbcTemplate.update(sql, message);
+        eventPublisher.publishReturnBookEvent("", date, user_name, book_name);
     }
 
     @Override
     public List<DateBook> findAllBooksForPeriod(LocalDate begin, LocalDate end) {
         java.sql.Date date_begin = java.sql.Date.valueOf(begin);
         java.sql.Date date_end = java.sql.Date.valueOf(end);
-        String sql = "SELECT id, date_taking, date_return FROM dates WHERE date_taking>? AND date_return<?";
+        String sql = "SELECT id, date_taking, date_return FROM book_user WHERE date_taking>? AND date_return<?";
         List<DateBook> date_books = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(DateBook.class), date_begin, date_end);
 
-        String sql_id = "SELECT id FROM dates WHERE date_taking>? AND date_return<?";
+        String sql_id = "SELECT id FROM book_user WHERE date_taking>? AND date_return<?";
         List<Integer> dates_id = jdbcTemplate.queryForList(sql_id, Integer.class, date_begin, date_end);
 
-        String sql_userId = "SELECT user_id FROM dates WHERE id = ?";
+        String sql_userId = "SELECT user_id FROM book_user WHERE id = ?";
         List<Integer> users_id = new ArrayList<>();
-        for (int date_id:
-             dates_id) {
+        for (int date_id :
+                dates_id) {
             users_id.add((jdbcTemplate.queryForList(sql_userId, Integer.class, date_id)).get(0));
         }
 
-        String sql2 = "SELECT book_id FROM dates WHERE date_taking>? AND date_return<?";
+        String sql2 = "SELECT book_id FROM book_user WHERE date_taking>? AND date_return<?";
         List<Integer> books_id = jdbcTemplate.queryForList(sql2, Integer.class, date_begin, date_end);
 
         int index = 0;
@@ -140,8 +114,8 @@ public class BookRepoImpl implements BookRepo {
         String sql3 = "SELECT * FROM users WHERE" +
                 " id = ?";
         List<User> users = new ArrayList<>();
-        for (int user_id:
-             users_id) {
+        for (int user_id :
+                users_id) {
             users.addAll(jdbcTemplate.query(sql3, new BeanPropertyRowMapper<>(User.class), user_id));
         }
 
@@ -207,15 +181,22 @@ public class BookRepoImpl implements BookRepo {
 
     @Override
     public List<Book> findBooksUser(int user_id) {
-        String sql = "SELECT book_id FROM book_user WHERE user_id=?";
-        List<Integer> books_id = jdbcTemplate.queryForList(sql, Integer.class, user_id);
 
-        List<Book> books = new ArrayList<>();
-        for (int id :
-                books_id) {
-            books.add(findById(id));
-        }
+        String sql = "SELECT books.id as book_id, books.name as book_name,\n" +
+                "       authors.id as author_id, authors.name as author_name,\n" +
+                "(SELECT array_agg(genres.name) as genres_name\n" +
+                "FROM genres\n" +
+                "INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = books.id),\n" +
+                "(SELECT array_agg(genres.id) as genres_id\n" +
+                "FROM genres\n" +
+                "INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = books.id)\n" +
+                "FROM books INNER JOIN authors ON authors.id = books.author_id\n" +
+                "           INNER JOIN book_genre ON book_genre.book_id = books.id\n" +
+                "           INNER JOIN genres ON book_genre.genre_id = genres.id\n" +
+                "INNER JOIN book_user ON book_user.user_id = ? AND books.id = book_user.book_id AND book_user.date_return IS NULL";
 
+        List<Book> books = jdbcTemplate.query(sql, new BookMapper(), user_id);
+        books.removeIf(Objects::isNull);
         return books;
     }
 
@@ -232,7 +213,6 @@ public class BookRepoImpl implements BookRepo {
 
         return books;
     }
-
 
 
 }
