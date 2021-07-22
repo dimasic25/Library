@@ -14,6 +14,7 @@ import java.util.List;
 
 @Controller
 @CrossOrigin
+@RequestMapping("/books")
 public class BookController {
     private final BookService bookService;
 
@@ -22,14 +23,14 @@ public class BookController {
         this.bookService = bookService;
     }
 
-    @GetMapping("/books")
+    @GetMapping()
     public ResponseEntity<List<Book>> getAllBooks() {
         List<Book> books = bookService.getAllBooks();
 
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
-    @GetMapping("/books/{book_id}")
+    @GetMapping("/{book_id}")
     public ResponseEntity<Book> getBook(@PathVariable int book_id) {
         Book book = bookService.getBook(book_id);
         if (book == null) {
@@ -39,48 +40,48 @@ public class BookController {
         return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
-    @GetMapping("users/{user_id}/books/{book_id}")
-    public ResponseEntity<Integer> takeBook(@PathVariable int user_id, @PathVariable int book_id) {
+    @PutMapping("/{book_id}/take")
+    public ResponseEntity<Integer> takeBook(@RequestParam int user_id, @PathVariable int book_id) {
         bookService.takeBook(user_id, book_id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("users/{user_id}/books/{book_id}")
-    public ResponseEntity<Integer> returnBook(@PathVariable int user_id, @PathVariable int book_id) {
+    @PutMapping("/{book_id}/return")
+    public ResponseEntity<Integer> returnBook(@RequestParam int user_id, @PathVariable int book_id) {
         bookService.returnBook(user_id, book_id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/books-period")
-    public ResponseEntity<List<DateBook>> returnBooksForPeriod(@RequestParam(value = "begin", required = false) String begin,
-                                                               @RequestParam(value = "end", required = false) String end) {
+    public ResponseEntity<List<DateBook>> returnBooksForPeriod(@RequestParam(required = false) String begin,
+                                                               @RequestParam(required = false) String end) {
         List<DateBook> books = bookService.returnBooksForPeriod(begin, end);
         return new ResponseEntity<>(books, HttpStatus.OK);
     }
 
-    @PostMapping("/books")
+    @PostMapping()
     public ResponseEntity<Book> createBook(@RequestBody Book book) {
         bookService.saveBook(book);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/books/{book_id}")
+    @PutMapping("/{book_id}")
     public ResponseEntity<User> updateBook(@PathVariable int book_id, @RequestBody Book book) {
         bookService.updateBook(book_id, book);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/books/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Book> deleteBook(@PathVariable int id) {
         bookService.deleteBook(id);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/users/{user_id}/books")
-    public ResponseEntity<List<Book>> getBooksUser(@PathVariable int user_id) {
+    @GetMapping("/books-user")
+    public ResponseEntity<List<Book>> getBooksUser(@RequestParam int user_id) {
         List<Book> books = bookService.getBooksUser(user_id);
 
         return new ResponseEntity<>(books, HttpStatus.OK);

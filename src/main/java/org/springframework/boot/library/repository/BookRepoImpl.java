@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
@@ -59,8 +59,8 @@ public class BookRepoImpl implements BookRepo {
 
         if (flag.size() == 0) {
 
-            Date date = new Date();
-            Timestamp date_taking = new Timestamp(date.getTime());
+            LocalDate date = LocalDate.now();
+            Date date_taking = Date.valueOf(date);
             String sql = "INSERT INTO dates(date_taking, book_id, user_id) VALUES(?, ?, ?)";
 
             jdbcTemplate.update(sql, date_taking, book_id, user_id);
@@ -78,10 +78,9 @@ public class BookRepoImpl implements BookRepo {
             String last_name = list.get(0);
 
             String user_name = first_name + " " + last_name;
-            LocalDate localDate = LocalDate.ofInstant(date.toInstant(), ZoneId.systemDefault());
             String book_name = findById(book_id).getName();
 
-            eventPublisher.publishTakeBookEvent("", localDate, user_name, book_name);
+            eventPublisher.publishTakeBookEvent("", date, user_name, book_name);
         }
     }
 
@@ -96,13 +95,8 @@ public class BookRepoImpl implements BookRepo {
 
     @Override
     public void returnBook(int user_id, int book_id) {
-        String sql_logic = "SELECT id FROM dates WHERE book_id=? AND user_id=? AND date_return IS NULL";
-        List<Integer> flag = jdbcTemplate.queryForList(sql_logic, Integer.class, book_id, user_id);
-
-        if (flag.size() != 0) {
-
-            Date date = new Date();
-            Timestamp date_return = new Timestamp(date.getTime());
+            LocalDate date = LocalDate.now();
+            Date date_return = Date.valueOf(date);
 
             String sql = "UPDATE dates SET date_return=? WHERE book_id=? AND user_id=? AND date_return IS NULL";
             jdbcTemplate.update(sql, date_return, book_id, user_id);
@@ -120,11 +114,9 @@ public class BookRepoImpl implements BookRepo {
             String last_name = list.get(0);
 
             String user_name = first_name + " " + last_name;
-            LocalDate localDate = LocalDate.ofInstant(date.toInstant(), ZoneId.systemDefault());
             String book_name = findById(book_id).getName();
 
-            eventPublisher.publishReturnBookEvent("", localDate, user_name, book_name);
-        }
+            eventPublisher.publishReturnBookEvent("", date, user_name, book_name);
     }
 
     @Override
