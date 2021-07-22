@@ -34,7 +34,6 @@ CREATE TABLE books
 
 CREATE TABLE book_genre
 (
-    id       SERIAL PRIMARY KEY,
     book_id  INTEGER NOT NULL,
     genre_id INTEGER NOT NULL,
     FOREIGN KEY (book_id) REFERENCES books (id),
@@ -43,7 +42,6 @@ CREATE TABLE book_genre
 
 CREATE TABLE book_user
 (
-    id      SERIAL PRIMARY KEY,
     book_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
     FOREIGN KEY (book_id) REFERENCES books (id),
@@ -52,7 +50,6 @@ CREATE TABLE book_user
 
 CREATE TABLE dates
 (
-    id          SERIAL PRIMARY KEY,
     date_taking DATE NOT NULL,
     date_return DATE NULL,
     book_id     INTEGER   NOT NULL,

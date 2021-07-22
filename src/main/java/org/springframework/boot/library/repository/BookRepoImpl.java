@@ -1,13 +1,17 @@
 package org.springframework.boot.library.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.library.mappers.BookMapper;
 import org.springframework.boot.library.model.*;
 import org.springframework.boot.library.publishers.BookEventPublisher;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -25,28 +29,15 @@ public class BookRepoImpl implements BookRepo {
 
     @Override
     public Book findById(int id) {
-        String sql = "SELECT id, name FROM books WHERE id = ?";
+        String sql = "SELECT books.id as book_id, books.name as book_name,\n" +
+                "       authors.id as author_id, authors.name as author_name,\n" +
+                "       book_genre.genre_id, genres.name as genre_name\n" +
+                "FROM books INNER JOIN authors ON authors.id = books.author_id\n" +
+                "           INNER JOIN book_genre ON book_genre.book_id = books.id\n" +
+                "           INNER JOIN genres ON book_genre.genre_id = genres.id\n" +
+                "WHERE books.id = ?";
 
-        Book book = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Book.class), id).stream().findAny().orElseThrow();
-
-        book.setAuthor(getAuthor(id));
-        book.setGenres(getGenres(id));
-
-        return book;
-    }
-
-    private Author getAuthor(int book_id) {
-        String sql = "SELECT authors.id, authors.name FROM authors INNER JOIN books ON authors.id = books.author_id WHERE books.id = ?";
-
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Author.class), book_id).stream().findAny().orElseThrow();
-    }
-
-    private List<Genre> getGenres(int book_id) {
-        String sql = "SELECT genres.id, genres.name FROM genres\n" +
-                "    INNER JOIN book_genre ON book_genre.book_id = ?\n" +
-                "                                 AND book_genre.genre_id = genres.id";
-
-        return  jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Genre.class), book_id);
+        return jdbcTemplate.queryForObject(sql, new BookMapper(), id);
     }
 
     @Override
@@ -65,16 +56,9 @@ public class BookRepoImpl implements BookRepo {
             String sql2 = "INSERT INTO book_user(book_id, user_id) VALUES(?, ?)";
             jdbcTemplate.update(sql2, book_id, user_id);
 
-            String sql3 = "SELECT first_name FROM users WHERE id = ?";
-            List<String> list = jdbcTemplate.queryForList(sql3, String.class, user_id);
-            String first_name = list.get(0);
+            String sql3 = "SELECT concat_ws(' ', first_name, last_name) FROM users WHERE id = ?";
+            String user_name = jdbcTemplate.queryForObject(sql3, String.class, user_id);
 
-
-            String sql4 = "SELECT last_name FROM users WHERE id = ?";
-            list = jdbcTemplate.queryForList(sql4, String.class, user_id);
-            String last_name = list.get(0);
-
-            String user_name = first_name + " " + last_name;
             String book_name = findById(book_id).getName();
 
             eventPublisher.publishTakeBookEvent("", date, user_name, book_name);
