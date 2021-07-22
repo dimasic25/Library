@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 
 @Repository
@@ -26,30 +25,28 @@ public class BookRepoImpl implements BookRepo {
 
     @Override
     public Book findById(int id) {
-        String sql = "SELECT id, name FROM books WHERE id=?";
+        String sql = "SELECT id, name FROM books WHERE id = ?";
 
         Book book = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Book.class), id).stream().findAny().orElseThrow();
 
-        // запрашиваем автора книги
-        String sql2 = "SELECT authors.id, authors.name FROM authors\n" +
-                "INNER JOIN books on authors.id = books.author_id\n" +
-                "WHERE books.id=?";
+        book.setAuthor(getAuthor(id));
+        book.setGenres(getGenres(id));
 
-        Author author = jdbcTemplate.query(sql2, new BeanPropertyRowMapper<>(Author.class), id).stream().findAny().orElseThrow();
-
-
-        // запрашиваем жанры книги
-        String sql3 = "SELECT genres.id, genres.name\n" +
-                "FROM genres\n" +
-                "         INNER JOIN book_genre on genres.id = book_genre.genre_id\n" +
-                "         INNER JOIN books on book_genre.book_id = books.id\n" +
-                "WHERE books.id=?";
-
-        List<Genre> genres = jdbcTemplate.query(sql3, new BeanPropertyRowMapper<>(Genre.class), id);
-
-        book.setAuthor(author);
-        book.setGenres(genres);
         return book;
+    }
+
+    private Author getAuthor(int book_id) {
+        String sql = "SELECT authors.id, authors.name FROM authors INNER JOIN books ON authors.id = books.author_id WHERE books.id = ?";
+
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Author.class), book_id).stream().findAny().orElseThrow();
+    }
+
+    private List<Genre> getGenres(int book_id) {
+        String sql = "SELECT genres.id, genres.name FROM genres\n" +
+                "    INNER JOIN book_genre ON book_genre.book_id = ?\n" +
+                "                                 AND book_genre.genre_id = genres.id";
+
+        return  jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Genre.class), book_id);
     }
 
     @Override
