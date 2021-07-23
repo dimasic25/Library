@@ -87,24 +87,21 @@ public class BookRepoImpl implements BookRepo {
         Date date_begin = Date.valueOf(begin);
         Date date_end = Date.valueOf(end);
         String sql = "SELECT date_taking, date_return," +
-                " users.id as user_id, users.first_name, users.last_name, users.email" +
+                " users.id as user_id, users.first_name, users.last_name, users.email," +
+                " books.id as book_id, books.name as book_name," +
+                " authors.id as author_id, authors.name as author_name,\n" +
+                "(SELECT array_agg(genres.name) as genres_name\n" +
+                "FROM genres\n" +
+                "INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = books.id),\n" +
+                "(SELECT array_agg(genres.id) as genres_id\n" +
+                "FROM genres\n" +
+                "INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = books.id)\n" +
                 " FROM book_user INNER JOIN users ON users.id = book_user.user_id" +
+                " INNER JOIN books ON books.id = book_user.book_id" +
+                " INNER JOIN authors ON books.author_id = authors.id" +
                 " WHERE date_taking>=? AND date_return<=?";
-        List<DateBook> date_books = jdbcTemplate.query(sql, new DateBookMapper(), date_begin, date_end);
 
-        String sql2 = "SELECT book_id FROM book_user WHERE date_taking>=? AND date_return<=?";
-        List<Integer> books_id = jdbcTemplate.queryForList(sql2, Integer.class, date_begin, date_end);
-
-        int index = 0;
-        for (int book_id :
-                books_id) {
-            Book book = findById(book_id);
-            DateBook dateBook = date_books.get(index);
-            dateBook.setBook(book);
-            index++;
-        }
-
-        return date_books;
+        return jdbcTemplate.query(sql, new DateBookMapper(), date_begin, date_end);
     }
 
     @Override

@@ -1,8 +1,7 @@
 package org.springframework.boot.library.mappers;
 
 
-import org.springframework.boot.library.model.DateBook;
-import org.springframework.boot.library.model.User;
+import org.springframework.boot.library.model.*;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
@@ -22,7 +21,12 @@ public class DateBookMapper implements RowMapper<DateBook> {
         user.setLast_name(resultSet.getString("last_name"));
         user.setEmail(resultSet.getString("email"));
 
+        BookMapper bookMapper = new BookMapper();
+
+        Book book = bookMapper.mapRow(resultSet, i);
+
         dateBook.setUser(user);
+        dateBook.setBook(book);
 
         return dateBook;
     }
