@@ -40,7 +40,7 @@ public class BookController {
         return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
-    @PutMapping("/{book_id}/take")
+    @PostMapping("/{book_id}/take")
     public ResponseEntity<Integer> takeBook(@RequestParam int user_id, @PathVariable int book_id) {
         bookService.takeBook(user_id, book_id);
         return new ResponseEntity<>(HttpStatus.OK);
