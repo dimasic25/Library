@@ -32,10 +32,10 @@ public class BookRepoImpl implements BookRepo {
                 "       authors.name as author_name,\n" +
                 "       (SELECT array_agg(genres.name) as genres_name\n" +
                 "        FROM genres\n" +
-                "                 INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = ?),\n" +
+                "                 INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = ? AND book_genre.status = 'true'),\n" +
                 "       (SELECT array_agg(genres.id) as genres_id\n" +
                 "        FROM genres\n" +
-                "                 INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = ?)\n" +
+                "                 INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = ? AND book_genre.status = 'true')\n" +
                 "FROM books\n" +
                 "         INNER JOIN authors\n" +
                 "                    ON authors.id = books.author_id\n" +
@@ -179,10 +179,10 @@ public class BookRepoImpl implements BookRepo {
                 "       authors.id as author_id, authors.name as author_name,\n" +
                 "(SELECT array_agg(genres.name) as genres_name\n" +
                 "FROM genres\n" +
-                "INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = books.id),\n" +
+                "INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = books.id AND book_genre.status = 'true'),\n" +
                 "(SELECT array_agg(genres.id) as genres_id\n" +
                 "FROM genres\n" +
-                "INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = books.id)\n" +
+                "INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = books.id AND book_genre.status = 'true')\n" +
                 "FROM books INNER JOIN authors ON authors.id = books.author_id\n" +
                 "           INNER JOIN book_genre ON book_genre.book_id = books.id\n" +
                 "           INNER JOIN genres ON book_genre.genre_id = genres.id\n" +
@@ -201,10 +201,10 @@ public class BookRepoImpl implements BookRepo {
                 "       authors.name as author_name,\n" +
                 "       (SELECT array_agg(genres.name) as genres_name\n" +
                 "        FROM genres\n" +
-                "                 INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = books.id),\n" +
+                "                 INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = books.id AND book_genre.status = 'true'),\n" +
                 "       (SELECT array_agg(genres.id) as genres_id\n" +
                 "        FROM genres\n" +
-                "                 INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = books.id)\n" +
+                "                 INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = books.id AND book_genre.status = 'true')\n" +
                 "FROM books\n" +
                 "         INNER JOIN authors\n" +
                 "                    ON authors.id = books.author_id\n";
