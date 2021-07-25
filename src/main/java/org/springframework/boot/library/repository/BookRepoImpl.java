@@ -101,16 +101,14 @@ public class BookRepoImpl implements BookRepo {
         String sql = "INSERT INTO books(name, author_id) VALUES(?, ?)";
         jdbcTemplate.update(sql, book.getName(), book.getAuthor().getId());
 
-        String sql_book = "SELECT id FROM books WHERE name = ? AND author_id = ?";
-        Integer book_id = jdbcTemplate.queryForObject(sql_book, Integer.class, book.getName(), book.getAuthor().getId());
-
-        String sql_genre = "INSERT INTO book_genre(book_id, genre_id) VALUES(?, ?)";
+        String sql_genre = "INSERT INTO book_genre(book_id, genre_id, status) VALUES(" +
+                "(SELECT id FROM books WHERE name = ? AND author_id = ?), ?, 'true')";
 
         List<Genre> genres = book.getGenres();
 
         for (Genre genre :
                 genres) {
-            jdbcTemplate.update(sql_genre, book_id, genre.getId());
+            jdbcTemplate.update(sql_genre, book.getName(), book.getAuthor().getId(), genre.getId());
         }
 
     }

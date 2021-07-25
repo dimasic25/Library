@@ -36,6 +36,7 @@ CREATE TABLE book_genre
 (
     book_id  INTEGER NOT NULL,
     genre_id INTEGER NOT NULL,
+    status boolean,
     FOREIGN KEY (book_id) REFERENCES books (id),
     FOREIGN KEY (genre_id) REFERENCES genres (id)
 );
