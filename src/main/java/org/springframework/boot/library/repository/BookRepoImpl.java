@@ -87,18 +87,10 @@ public class BookRepoImpl implements BookRepo {
         Date date_begin = Date.valueOf(begin);
         Date date_end = Date.valueOf(end);
         String sql = "SELECT date_taking, date_return," +
-                " users.id as user_id, users.first_name, users.last_name, users.email," +
-                " books.id as book_id, books.name as book_name," +
-                " authors.id as author_id, authors.name as author_name,\n" +
-                "(SELECT array_agg(genres.name) as genres_name\n" +
-                "FROM genres\n" +
-                "INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = books.id),\n" +
-                "(SELECT array_agg(genres.id) as genres_id\n" +
-                "FROM genres\n" +
-                "INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = books.id)\n" +
+                " users.first_name, users.last_name," +
+                " books.name as book_name " +
                 " FROM book_user INNER JOIN users ON users.id = book_user.user_id" +
                 " INNER JOIN books ON books.id = book_user.book_id" +
-                " INNER JOIN authors ON books.author_id = authors.id" +
                 " WHERE date_taking>=? AND date_return<=?";
 
         return jdbcTemplate.query(sql, new DateBookMapper(), date_begin, date_end);

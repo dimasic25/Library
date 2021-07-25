@@ -16,14 +16,12 @@ public class DateBookMapper implements RowMapper<DateBook> {
 
         User user = new User();
 
-        user.setId(resultSet.getInt("user_id"));
         user.setFirst_name(resultSet.getString("first_name"));
         user.setLast_name(resultSet.getString("last_name"));
-        user.setEmail(resultSet.getString("email"));
 
-        BookMapper bookMapper = new BookMapper();
+        Book book = new Book();
 
-        Book book = bookMapper.mapRow(resultSet, i);
+        book.setName(resultSet.getString("book_name"));
 
         dateBook.setUser(user);
         dateBook.setBook(book);
