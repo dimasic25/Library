@@ -118,17 +118,48 @@ public class BookRepoImpl implements BookRepo {
         String sql = "UPDATE books SET name =?, author_id=? WHERE id=?";
         jdbcTemplate.update(sql, book.getName(), book.getAuthor().getId(), id);
 
-        String delete_sql = "DELETE FROM book_genre WHERE book_id=?";
+        String old_genre_sql = "SELECT genre_id FROM book_genre WHERE book_id = ?";
 
-        jdbcTemplate.update(delete_sql, id);
+        List<Integer> old_genre_id = jdbcTemplate.queryForList(old_genre_sql, Integer.class, id);
 
-        String sql_genre = "INSERT INTO book_genre(book_id, genre_id) VALUES(?, ?)";
+        List<Integer> new_genre_id = new ArrayList<>();
 
-        List<Genre> genres = book.getGenres();
+        for (Genre genre:
+             book.getGenres()) {
+            new_genre_id.add(genre.getId());
+        }
 
-        for (Genre genre :
-                genres) {
-            jdbcTemplate.update(sql_genre, id, genre.getId());
+        List<Integer> new_id = new ArrayList<>(new_genre_id);
+
+        new_id.removeAll(old_genre_id);
+
+        // устанавливаем новые связи между книгами и жанрами
+        String sql_new_genre = "INSERT INTO book_genre(book_id, genre_id, status) VALUES(?, ?, 'true')";
+
+        for (Integer id_genre:
+             new_id) {
+            jdbcTemplate.update(sql_new_genre, id, id_genre);
+        }
+
+        List<Integer> old_id = new ArrayList<>(old_genre_id);
+
+        old_id.removeAll(new_id);
+
+        // у жанров, которых нет в update, сбрасываем статус
+        String sql_update_genre = "UPDATE book_genre SET status = 'false' WHERE genre_id = ? AND book_id = ?";
+
+        for (Integer id_genre:
+             old_id) {
+            jdbcTemplate.update(sql_update_genre, id_genre, id);
+        }
+
+        old_genre_id.retainAll(new_genre_id);
+
+        String sql_update_genre1 = "UPDATE book_genre SET status = 'true' WHERE genre_id = ? AND book_id = ?";
+
+        for (Integer id_genre:
+             old_genre_id) {
+            jdbcTemplate.update(sql_update_genre1, id_genre, id);
         }
     }
 
