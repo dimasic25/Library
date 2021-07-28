@@ -13,14 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookMapper implements RowMapper<Book> {
-    int book_id;
     @Override
     public Book mapRow(ResultSet resultSet, int i) throws SQLException {
-        if (book_id != resultSet.getInt("book_id")) {
             Book book = new Book();
-            book_id = resultSet.getInt("book_id");
 
-            book.setId(book_id);
+            book.setId( resultSet.getInt("book_id"));
             book.setName(resultSet.getString("book_name"));
 
             Author author = new Author();
@@ -44,7 +41,5 @@ public class BookMapper implements RowMapper<Book> {
             book.setAuthor(author);
             book.setGenres(genres);
             return book;
-        }
-        return null;
     }
 }

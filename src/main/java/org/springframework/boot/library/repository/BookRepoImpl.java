@@ -124,8 +124,8 @@ public class BookRepoImpl implements BookRepo {
 
         List<Integer> new_genre_id = new ArrayList<>();
 
-        for (Genre genre:
-             book.getGenres()) {
+        for (Genre genre :
+                book.getGenres()) {
             new_genre_id.add(genre.getId());
         }
 
@@ -136,8 +136,8 @@ public class BookRepoImpl implements BookRepo {
         // устанавливаем новые связи между книгами и жанрами
         String sql_new_genre = "INSERT INTO book_genre(book_id, genre_id, status) VALUES(?, ?, 'true')";
 
-        for (Integer id_genre:
-             new_id) {
+        for (Integer id_genre :
+                new_id) {
             jdbcTemplate.update(sql_new_genre, id, id_genre);
         }
 
@@ -148,8 +148,8 @@ public class BookRepoImpl implements BookRepo {
         // у жанров, которых нет в update, сбрасываем статус
         String sql_update_genre = "UPDATE book_genre SET status = 'false' WHERE genre_id = ? AND book_id = ?";
 
-        for (Integer id_genre:
-             old_id) {
+        for (Integer id_genre :
+                old_id) {
             jdbcTemplate.update(sql_update_genre, id_genre, id);
         }
 
@@ -157,8 +157,8 @@ public class BookRepoImpl implements BookRepo {
 
         String sql_update_genre1 = "UPDATE book_genre SET status = 'true' WHERE genre_id = ? AND book_id = ?";
 
-        for (Integer id_genre:
-             old_genre_id) {
+        for (Integer id_genre :
+                old_genre_id) {
             jdbcTemplate.update(sql_update_genre1, id_genre, id);
         }
     }
@@ -184,13 +184,9 @@ public class BookRepoImpl implements BookRepo {
                 "FROM genres\n" +
                 "INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = books.id AND book_genre.status = 'true')\n" +
                 "FROM books INNER JOIN authors ON authors.id = books.author_id\n" +
-                "           INNER JOIN book_genre ON book_genre.book_id = books.id\n" +
-                "           INNER JOIN genres ON book_genre.genre_id = genres.id\n" +
                 "INNER JOIN book_user ON book_user.user_id = ? AND books.id = book_user.book_id AND book_user.date_return IS NULL";
 
-        List<Book> books = jdbcTemplate.query(sql, new BookMapper(), user_id);
-        books.removeIf(Objects::isNull);
-        return books;
+        return jdbcTemplate.query(sql, new BookMapper(), user_id);
     }
 
     @Override
