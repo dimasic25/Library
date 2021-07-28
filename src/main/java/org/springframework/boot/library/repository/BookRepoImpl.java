@@ -32,16 +32,16 @@ public class BookRepoImpl implements BookRepo {
                 "       authors.name as author_name,\n" +
                 "       (SELECT array_agg(genres.name) as genres_name\n" +
                 "        FROM genres\n" +
-                "                 INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = ? AND book_genre.status = 'true'),\n" +
+                "                 INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = books.id AND book_genre.status = 'true'),\n" +
                 "       (SELECT array_agg(genres.id) as genres_id\n" +
                 "        FROM genres\n" +
-                "                 INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = ? AND book_genre.status = 'true')\n" +
+                "                 INNER JOIN book_genre on genres.id = book_genre.genre_id AND book_genre.book_id = books.id AND book_genre.status = 'true')\n" +
                 "FROM books\n" +
                 "         INNER JOIN authors\n" +
                 "                    ON authors.id = books.author_id\n" +
                 "WHERE books.id = ?;";
 
-        return jdbcTemplate.queryForObject(sql, new BookMapper(), id, id, id);
+        return jdbcTemplate.queryForObject(sql, new BookMapper(), id);
     }
 
     @Override
